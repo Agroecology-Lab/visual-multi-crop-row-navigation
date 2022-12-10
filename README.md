@@ -1,6 +1,29 @@
        
 # Visual Multi Crop Row Navigation in Arable Farming Fields      
 
+
+The visual-multi-crop-row-navigation project is a software implementation of a visual navigation system for agricultural robots. The goal of the project is to enable agricultural robots to navigate accurately within a field, and identify and navigate between different crop rows.
+
+The project is implemented in Python and makes use of the OpenCV library for image processing and computer vision tasks. The navigation system uses a monocular camera mounted on the robot, and relies on the visual features of the plants and the soil to determine the robot's position and orientation within the field.
+
+The repository includes the following files and directories:
+
+-    data: This directory contains example images and data used for testing and evaluation.
+-    docs: This directory contains documentation for the project, including a detailed description of the algorithms and methods used, as well as instructions for how to use and set up the system.
+-   src: This directory contains the source code for the project. The main files are:
+        navigator.py: This file contains the main navigation class, which implements the core navigation algorithms and methods.
+        visualizer.py: This file contains a helper class for visualizing the results of the navigation algorithm, such as the detected crop rows and the estimated robot pose.
+-    tests: This directory contains unit tests for the various components of the navigation system.
+    
+To use the visual-multi-crop-row-navigation system, you will need to install the required dependencies, including Python and the OpenCV library. The instructions for installation and setup are provided below. Once the dependencies are installed, you can run the navigation system using the navigator.py script, and visualize the results using the visualizer.py script.
+
+Please also see the docs directory for more detailed documentation and usage instructions.
+
+
+
+
+
+
 A work presented in IROS 2022 - Kyoto, Japan
 
 <div align="center">
