@@ -3,6 +3,83 @@
 
 A work presented in IROS 2022 - Kyoto, Japan
 
+
+
+### 1. Supported Cameras
+The system is primarily configured for **Stereo Infrared** setups, specifically targeting the **Intel RealSense D400 series**.
+
+| Camera Type | Technical Basis | Link to Logic |
+| :--- | :--- | :--- |
+| **Intel RealSense (D435/D455)** | Uses `/infra1` and `/infra2` topics. These provide global-shutter, hardware-synced frames ideal for outdoor motion. | [params.yaml: L4-L5](https://github.com/Agroecology-Lab/visual-multi-crop-row-navigation/blob/ROS2/configs/params.yaml#L4) |
+| **Stereo USB Cameras** | Compatible if they publish to standard ROS 2 `Image` topics. | [visual_servoing_node.py: L47](https://github.com/Agroecology-Lab/visual-multi-crop-row-navigation/blob/ROS2/visual_multi_crop_row_navigation/visual_servoing_node.py#L47) |
+| **Simulation (Gazebo)** | Supports the `AgriBot` platform's virtual stereo sensors. | [params.yaml: L20](https://github.com/Agroecology-Lab/visual-multi-crop-row-navigation/blob/ROS2/configs/params.yaml#L20) |
+| **Video Playback** | Supports `.mp4` or `.avi` files via the `video_publisher` script. | [video_publisher.py](https://github.com/Agroecology-Lab/visual-multi-crop-row-navigation/blob/ROS2/scripts/video_publisher.py) |
+
+---
+
+### 2. ROS 2 Nodes and Subscribers
+The following table outlines the active ROS 2 entities identified in the source files.
+
+| Node Name | Subscriber/Publisher | Message Type | Purpose |
+| :--- | :--- | :--- | :--- |
+| `visual_servoing_node` | **Sub:** `camera_topic_name` | `sensor_msgs/msg/Image` | Receives Left/Front camera feed. |
+| | **Sub:** `camera_topic_name_right` | `sensor_msgs/msg/Image` | Receives Right/Back camera feed. |
+| | **Pub:** `/cmd_vel` | `geometry_msgs/msg/Twist` | Outputs robot movement commands. |
+| | **Pub:** `debug_image` | `sensor_msgs/msg/Image` | Outputs visualized crop-row skeletons. |
+| `video_publisher` | **Pub:** Defined in params | `sensor_msgs/msg/Image` | Streams recorded video as live camera data. |
+
+---
+
+### 3. Implementation Details
+
+#### **Stereo Synchronization**
+The navigation logic relies on two cameras being synced in time. This is handled by the `ApproximateTimeSynchronizer` in [visual_servoing_node.py (Lines 52-57)](https://github.com/Agroecology-Lab/visual-multi-crop-row-navigation/blob/ROS2/visual_multi_crop_row_navigation/visual_servoing_node.py#L52):
+
+```
+self.ts = message_filters.ApproximateTimeSynchronizer(
+    [self.left_image_sub, self.right_image_sub], 
+    queue_size=10, 
+    slop=0.1
+)
+self.ts.registerCallback(self.image_callback)
+```
+### 4.Topic Configuration
+
+The specific camera topics used by the subscribers are defined in [configs/params.yaml (Lines 4-6):](https://github.com/Agroecology-Lab/visual-multi-crop-row-navigation/blob/ROS2/configs/params.yaml)
+```
+camera_topic_name: "/camera/infra1/image_rect_raw"
+camera_topic_name_right: "/camera/infra2/image_rect_raw"
+camera_info_topic_name: "/camera/infra1/camera_info"
+```
+These lines show that the node expects rectified images (indicated by image_rect_raw). If you use a camera without hardware rectification, you would need to run an image_proc node between the camera driver and this navigation node.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <div align="center">
 	<img src="data/motivation.png" alt="BonnBot" height="340" title="BonnBot"/>
 </div>
